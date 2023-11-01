@@ -20,7 +20,8 @@
       Калькулятор ожидания дня рождения
     </div>
     <div class="card-body">
-      <form method="post">
+      <!-- Для передачи файлов применяется формат enctype="multipart/form-data". -->
+      <form method="post" enctype="multipart/form-data">
         <!-- Добавьте тег csrf_token. Без него POST-запрос будет отклонён. -->
         {% csrf_token %}
         {% if not "/delete/" in request.path %}
