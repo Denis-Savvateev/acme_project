@@ -15,7 +15,8 @@
     
       <div class="col-10"> <!--Вторая "колонка" в строке, её ширина — 10/12 -->
         <div>  <!-- Текст обернём в отдельный вложенный div/ -->
-          {{ birthday.first_name }} {{ birthday.last_name }} - {{ birthday.birthday }}
+          {{ birthday.first_name }} {{ birthday.last_name }} - {{ birthday.birthday }}<br>
+          <a href="{% url 'birthday:detail' birthday.id %}">Сколько до дня рождения?</a>
         </div>
         <!-- Ссылку на страницу редактирования тоже обернём
         в div; адрес ссылки указываем через namespace:name -->

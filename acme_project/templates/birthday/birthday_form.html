@@ -5,13 +5,13 @@
 
 {% block content %}
   <!-- Присваиваем переменной data объект request.POST -->
-  {% with data=form.instance %}  
+  {% comment %} {% with data=form.instance %}   {% endcomment %}
   <!-- Если в пути запроса содержится строка /edit/. -->
   {% if '/edit/' in request.path %}
     <!-- Вывести заголовок и номер записи. -->
     <h1>Редактировать запись {{ data.pk }}</h1>
-  {% elif "/delete/" in request.path %}
-    <h1>Удалить запись {{ data.pk }}</h1>
+  {% comment %} {% elif "/delete/" in request.path %}
+    <h1>Удалить запись {{ data.pk }}</h1> {% endcomment %}
   {% else %}
     <h1>Создать запись</h1>
   {% endif %}
@@ -24,19 +24,19 @@
       <form method="post" enctype="multipart/form-data">
         <!-- Добавьте тег csrf_token. Без него POST-запрос будет отклонён. -->
         {% csrf_token %}
-        {% if not "/delete/" in request.path %}
-          <!-- Выводим поля формы с помощью специального тега. -->
-          {% bootstrap_form form %}
-        {% else %}
+        {% comment %} {% if not "/delete/" in request.path %} {% endcomment %}
+        <!-- Выводим поля формы с помощью специального тега. -->
+        {% bootstrap_form form %}
+        {% comment %} {% else %}
           <p>{{ data.first_name }} {{ data.last_name }}</p>
           <p>{{ data.birthday }}</p>
-        {% endif %}
+        {% endif %} {% endcomment %}
         <!-- Добавляем кнопку отправки данных. -->
         {% bootstrap_button button_type="submit" content="Отправить" %}
       </form>
     </div>
   </div>
-  {% if form.is_valid %}
+  {% comment %} {% if form.is_valid %}
     ID новой записи в БД: {{ data.id }}
     <h2>Привет, {{ data.first_name }} {{ data.last_name }}</h2>
     <!-- Если до дня рождения 0 дней... -->
@@ -49,5 +49,5 @@
       Осталось дней до дня рождения: {{ birthday_countdown }}!
     {% endif %}
   {% endif %}
-  {% endwith %}
-{% endblock %}
+  {% endwith %} {% endcomment %}
+{% endblock content %}
