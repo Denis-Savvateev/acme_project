@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Birthday
+from .models import Birthday, Tag
 
 
 class BirthdayAdmin(admin.ModelAdmin):
@@ -13,3 +13,4 @@ class BirthdayAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Birthday, BirthdayAdmin)
+admin.site.register(Tag)
