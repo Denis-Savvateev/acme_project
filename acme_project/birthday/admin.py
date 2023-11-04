@@ -8,6 +8,7 @@ class BirthdayAdmin(admin.ModelAdmin):
         'first_name',
         'last_name',
         'birthday',
+        'author',
     )
 
 

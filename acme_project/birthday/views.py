@@ -1,5 +1,6 @@
 # birthday/views.py
-# Для создания CBV-объектов
+from django.shortcuts import get_object_or_404
+# Для создания CBV-объектов импортируем View-классы:
 from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, UpdateView
 )
@@ -9,6 +10,7 @@ from django.views.generic import (
 # маршрутов может быть ещё не сформирована, и использование обычного
 # reverse() вызовет ошибку
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import BirthdayForm
 # Импортируем модель дней рождения.
@@ -19,6 +21,8 @@ from .utils import calculate_birthday_countdown
 
 # Наследуем класс от встроенного ListView:
 class BirthdayListView(ListView):
+    ''' Выводит список всех записей '''
+
     # Указываем модель, с которой работает CBV...
     model = Birthday
     # ...сортировку, которая будет применена при выводе списка объектов:
@@ -53,22 +57,50 @@ class BirthdayListView(ListView):
 
 # Добавляем миксин первым по списку родительских классов.
 # Убрали миксин за ненадобностью
-class BirthdayCreateView(CreateView):
+class BirthdayCreateView(LoginRequiredMixin, CreateView):
+    ''' Создаёт запись. '''
+
     model = Birthday
     form_class = BirthdayForm
 
+    def form_valid(self, form):
+        # Присвоить полю author объект пользователя из запроса.
+        form.instance.author = self.request.user
+        # Продолжить валидацию, описанную в форме.
+        return super().form_valid(form)
 
-class BirthdayUpdateView(UpdateView):
+
+class BirthdayUpdateView(LoginRequiredMixin, UpdateView):
+    ''' Редактирует запись. '''
+
     model = Birthday
     form_class = BirthdayForm
 
+    def dispatch(self, request, *args, **kwargs):
+        # Получаем объект по первичному ключу и автору или вызываем 404 ошибку.
+        get_object_or_404(Birthday, pk=kwargs['pk'], author=request.user)
+        # Если объект был найден, то вызываем родительский метод,
+        # чтобы работа CBV продолжилась.
+        return super().dispatch(request, *args, **kwargs)
 
-class BirthdayDeleteView(DeleteView):
+
+class BirthdayDeleteView(LoginRequiredMixin, DeleteView):
+    ''' Удаляет запись. '''
+
     model = Birthday
     success_url = reverse_lazy('birthday:list')
 
+    def dispatch(self, request, *args, **kwargs):
+        # Получаем объект по первичному ключу и автору или вызываем 404 ошибку.
+        get_object_or_404(Birthday, pk=kwargs['pk'], author=request.user)
+        # Если объект был найден, то вызываем родительский метод,
+        # чтобы работа CBV продолжилась.
+        return super().dispatch(request, *args, **kwargs)
+
 
 class BirthdayDetailView(DetailView):
+    ''' Выводит подробные сведения о записи '''
+
     model = Birthday
 
     def get_context_data(self, **kwargs):
